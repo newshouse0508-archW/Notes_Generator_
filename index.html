@@ -1,94 +1,155 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>NotesGenerator AI</title>
+  <meta charset="UTF-8">
+  <title>NotesGenerator AI – Demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <style>
     body {
       margin: 0;
       font-family: Arial, sans-serif;
       background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-      color: white;
+      color: #ffffff;
+    }
+
+    header {
+      padding: 50px 20px;
       text-align: center;
     }
-    header {
-      padding: 60px 20px;
-    }
-    h1 {
-      font-size: 48px;
+
+    header h1 {
+      font-size: 42px;
       margin-bottom: 10px;
     }
-    p {
+
+    header p {
       font-size: 18px;
       opacity: 0.9;
     }
-    .box {
-      background: rgba(255,255,255,0.08);
-      margin: 30px auto;
-      padding: 30px;
-      max-width: 700px;
-      border-radius: 12px;
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      padding: 20px;
     }
+
+    .card {
+      background: rgba(255,255,255,0.08);
+      padding: 30px;
+      border-radius: 14px;
+      margin-bottom: 30px;
+    }
+
+    .card h2 {
+      margin-top: 0;
+    }
+
+    input[type="file"] {
+      padding: 10px;
+      margin-top: 10px;
+      color: white;
+    }
+
     button {
-      padding: 14px 28px;
-      margin: 10px;
+      margin-top: 20px;
+      padding: 12px 25px;
       font-size: 16px;
       border: none;
       border-radius: 8px;
-      cursor: pointer;
       background: #00c6ff;
       color: #000;
-      font-weight: bold;
+      cursor: pointer;
     }
+
     button:hover {
-      background: #00e6ff;
+      background: #00a3cc;
     }
+
+    #status {
+      margin-top: 20px;
+      font-size: 16px;
+    }
+
     footer {
-      margin-top: 60px;
+      text-align: center;
       padding: 20px;
       font-size: 14px;
       opacity: 0.7;
     }
   </style>
 </head>
+
 <body>
 
 <header>
   <h1>NotesGenerator AI 🚀</h1>
-  <p>Convert Lectures & Government Information into Easy Notes</p>
+  <p>Convert Lectures into Easy Notes (Prototype Demo)</p>
 </header>
 
-<div class="box">
-  <h2>Project Objective</h2>
-  <p>
-    This is an exploratory project focused on <b>Government Schemes Awareness</b>.
-    The platform helps students, farmers, and citizens discover
-    <b>official government schemes and scholarships</b> in one place.
-  </p>
-</div>
+<div class="container">
 
-<div class="box">
-  <h2>How It Works (Demo)</h2>
-  <p>1️⃣ Select your category (Student / Farmer / Citizen)</p>
-  <p>2️⃣ View relevant government schemes</p>
-  <p>3️⃣ Redirect to official government websites</p>
+  <div class="card">
+    <h2>📌 Project Objective</h2>
+    <p>
+      This is an exploratory academic project focused on making education and
+      government information easier to understand.  
+      The current version demonstrates the complete user flow.
+    </p>
+  </div>
 
-  <button>Select Category</button>
-  <button>View Schemes</button>
-</div>
+  <div class="card">
+    <h2>🎥 Lecture to Notes (Demo)</h2>
+    <p>
+      Upload a lecture video (demo only).  
+      Actual AI processing will be handled on cloud servers in the final version.
+    </p>
 
-<div class="box">
-  <h2>Why This Project?</h2>
-  <p>
-    Many people fall for fake schemes due to lack of awareness.
-    This platform ensures users are redirected only to
-    <b>official government portals</b>.
-  </p>
+    <input type="file" id="videoFile" accept="video/*">
+
+    <br>
+
+    <button onclick="runDemo()">Generate Notes</button>
+
+    <div id="status"></div>
+  </div>
+
+  <div class="card">
+    <h2>🧠 How It Works</h2>
+    <ol>
+      <li>User uploads lecture video</li>
+      <li>System extracts important concepts</li>
+      <li>AI generates structured notes</li>
+      <li>User gets clean, readable study material</li>
+    </ol>
+  </div>
+
 </div>
 
 <footer>
-  <p>Exploratory Academic Project | Dummy Prototype</p>
+  © 2026 NotesGenerator AI | Prototype Version
 </footer>
+
+<script>
+  function runDemo() {
+    const status = document.getElementById("status");
+
+    status.innerHTML = "⏳ Uploading video...";
+    setTimeout(() => {
+      status.innerHTML = "⏳ Extracting key topics...";
+    }, 2000);
+
+    setTimeout(() => {
+      status.innerHTML = "⏳ Generating structured notes...";
+    }, 4000);
+
+    setTimeout(() => {
+      status.innerHTML =
+        "✅ Demo complete. AI backend will be connected in the next development phase.";
+    }, 6000);
+  }
+</script>
 
 </body>
 </html>
+
