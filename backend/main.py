@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, status
+from fastapi import FastAPI
 from pydantic import BaseModel, HttpUrl
 from youtube_transcript_api import YouTubeTranscriptApi, NoTranscriptFound, TranscriptsDisabled
 from youtube_transcript_api.formatters import TextFormatter
@@ -37,6 +37,11 @@ def extract_video_id(url: str) -> Optional[str]:
 
 @app.post("/transcript", response_model=TranscriptResponse)
 async def get_transcript(request: TranscriptRequest):
+    """
+    Fetch transcript for a YouTube video.
+    Tries manual subtitles first, then auto-generated.
+    Returns plain text or error message.
+    """
     video_id = extract_video_id(str(request.url))
     
     if not video_id:
@@ -45,32 +50,34 @@ async def get_transcript(request: TranscriptRequest):
         )
 
     try:
-        # सही तरीका: YouTubeTranscriptApi.get_transcript(video_id)
-        transcript_list = YouTubeTranscriptApi.get_transcript(video_id)
-        
-        formatter = TextFormatter()
-        plain_text = formatter.format_transcript(transcript_list)
-        
-        return TranscriptResponse(text=plain_text.strip() or "Transcript is empty.")
-
-    except TranscriptsDisabled:
-        return TranscriptResponse(
-            text="Transcript not available for this video. (Subtitles are disabled)"
+        # Try manual subtitles first (common languages)
+        transcript_list = YouTubeTranscriptApi.get_transcript(
+            video_id,
+            languages=['en', 'en-US', 'en-GB', 'hi']  # English + Hindi add kiya
         )
-    
-    except NoTranscriptFound:
-        return TranscriptResponse(
-            text="Transcript not available for this video."
-        )
+        
+    except (NoTranscriptFound, TranscriptsDisabled):
+        # Fallback to auto-generated
+        try:
+            transcript = YouTubeTranscriptApi.list_transcripts(video_id).find_generated_transcript(['en', 'en-US', 'hi'])
+            transcript_list = transcript.fetch()
+        except Exception as fallback_e:
+            return TranscriptResponse(
+                text=f"Transcript not available. Tried manual & auto-generated. Error: {str(fallback_e)}"
+            )
     
     except Exception as e:
-        # Error को log करने के लिए print करो (Render logs में दिखेगा)
-        print(f"Error fetching transcript: {str(e)}")
         return TranscriptResponse(
             text=f"Unable to fetch transcript. Error: {str(e)}"
         )
 
-# Optional: root endpoint for testing / health check
+    # Format to plain text
+    formatter = TextFormatter()
+    plain_text = formatter.format_transcript(transcript_list)
+    
+    return TranscriptResponse(text=plain_text.strip() or "Transcript is empty.")
+
+# Health check / root endpoint
 @app.get("/")
 async def root():
     return {"message": "StudyStream Transcript API is running"}
