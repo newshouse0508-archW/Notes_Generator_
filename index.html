@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>StudyStream – YouTube Transcript Extractor</title>
+  
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+      color: #333;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 800px;
+      width: 100%;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    h1 {
+      font-size: 2em;
+      margin-bottom: 10px;
+    }
+
+    p {
+      font-size: 1em;
+      line-height: 1.5;
+    }
+
+    .input-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      max-width: 600px;
+      padding: 10px;
+      font-size: 1em;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      margin-bottom: 10px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 1em;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .output-section {
+      width: 100%;
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: white;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 15px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      display: none;
+    }
+
+    .output-section.visible {
+      display: block;
+    }
+
+    .transcript {
+      max-height: 400px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      font-size: 0.9em;
+      line-height: 1.4;
+    }
+
+    .loading {
+      text-align: center;
+      font-style: italic;
+      color: #666;
+    }
+
+    .error {
+      color: #d9534f;
+      text-align: center;
+    }
+
+    footer {
+      margin-top: auto;
+      padding: 20px;
+      text-align: center;
+      font-size: 0.8em;
+      color: #777;
+      width: 100%;
+      border-top: 1px solid #eee;
+    }
+
+    /* Mobile responsiveness */
+    @media (max-width: 600px) {
+      .container {
+        padding: 15px;
+      }
+      h1 {
+        font-size: 1.5em;
+      }
+      input[type="text"], button {
+        font-size: 0.9em;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>Extract YouTube Transcripts Instantly</h1>
+      <p>Paste a YouTube video link to fetch its transcript (if subtitles are available).</p>
+    </header>
+    
+    <section class="input-section">
+      <input type="text" id="youtube-url" placeholder="https://www.youtube.com/watch?v=VIDEO_ID">
+      <button id="get-transcript">Get Transcript</button>
+    </section>
+    
+    <section class="output-section" id="output">
+      <!-- Loading and results will appear here -->
+    </section>
+  </div>
+  
+  <footer>
+    <p>Transcripts are available only if the YouTube video has subtitles enabled.</p>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const urlInput = document.getElementById('youtube-url');
+      const getButton = document.getElementById('get-transcript');
+      const outputSection = document.getElementById('output');
+
+      getButton.addEventListener('click', async () => {
+        const url = urlInput.value.trim();
+        if (!url) {
+          showError('Please enter a YouTube video link.');
+          return;
+        }
+
+        showLoading();
+
+        try {
+          // ────────────────────────────────────────────────
+          // Replace this URL with your actual backend endpoint
+          // Example: https://your-backend.vercel.app/transcript
+          // or https://your-backend.onrender.com/transcript
+          // ────────────────────────────────────────────────
+          const API_URL = '/transcript';   // ← change this when you have backend
+
+          const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ url })
+          });
+
+          if (!response.ok) {
+            throw new Error(`Server responded with ${response.status}`);
+          }
+
+          const data = await response.json();
+
+          if (data.transcript && data.transcript.trim()) {
+            showTranscript(data.transcript);
+          } else {
+            showError('Transcript not available for this video.');
+          }
+        } catch (error) {
+          console.error(error);
+          showError('Unable to fetch transcript. Please try again.');
+        }
+      });
+
+      function showLoading() {
+        outputSection.innerHTML = '<p class="loading">Fetching transcript…</p>';
+        outputSection.classList.add('visible');
+      }
+
+      function showTranscript(text) {
+        outputSection.innerHTML = `<div class="transcript">${text}</div>`;
+        outputSection.classList.add('visible');
+      }
+
+      function showError(message) {
+        outputSection.innerHTML = `<p class="error">${message}</p>`;
+        outputSection.classList.add('visible');
+      }
+    });
+  </script>
+
+</body>
+</html>
