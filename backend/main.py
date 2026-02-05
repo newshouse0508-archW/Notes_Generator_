@@ -37,10 +37,6 @@ def extract_video_id(url: str) -> Optional[str]:
 
 @app.post("/transcript", response_model=TranscriptResponse)
 async def get_transcript(request: TranscriptRequest):
-    """
-    Fetch transcript for a YouTube video.
-    Returns plain text joined transcript or error message.
-    """
     video_id = extract_video_id(str(request.url))
     
     if not video_id:
@@ -49,14 +45,13 @@ async def get_transcript(request: TranscriptRequest):
         )
 
     try:
-        # Fetch transcript (tries default language first)
+        # सही तरीका: YouTubeTranscriptApi.get_transcript(video_id)
         transcript_list = YouTubeTranscriptApi.get_transcript(video_id)
         
-        # Format as plain text (removes timestamps)
         formatter = TextFormatter()
         plain_text = formatter.format_transcript(transcript_list)
         
-        return TranscriptResponse(text=plain_text.strip())
+        return TranscriptResponse(text=plain_text.strip() or "Transcript is empty.")
 
     except TranscriptsDisabled:
         return TranscriptResponse(
@@ -69,11 +64,11 @@ async def get_transcript(request: TranscriptRequest):
         )
     
     except Exception as e:
-        # Catch unexpected errors (network issues, rate limits, etc.)
+        # Error को log करने के लिए print करो (Render logs में दिखेगा)
+        print(f"Error fetching transcript: {str(e)}")
         return TranscriptResponse(
-            text=f"Unable to fetch transcript. ({str(e)})"
+            text=f"Unable to fetch transcript. Error: {str(e)}"
         )
-
 
 # Optional: root endpoint for testing / health check
 @app.get("/")
