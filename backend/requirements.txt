@@ -1,4 +1,4 @@
 fastapi==0.115.0
 uvicorn==0.30.6
-youtube-transcript-api==0.6.2   # latest stable version (2025 तक ये काम करता है)
+youtube-transcript-api==0.6.2   # latest stable version (auto-generated support better)
 pydantic==2.9.2
